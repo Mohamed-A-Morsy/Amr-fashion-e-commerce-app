@@ -48,7 +48,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const handleLogout = () => {
     adminLogout();
     toast.success('Logged out successfully');
-    router.push('/admin-login');
+    router.push('/login');
   };
 
   return (

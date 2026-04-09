@@ -1,63 +1,46 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, ReactNode } from 'react';
+import { useAuth } from './AuthContext';
+import { User } from '@/types';
 
 interface AdminAuthContextType {
+  adminUser: User | null;
   isAdminLoggedIn: boolean;
-  adminEmail: string | null;
   adminLogin: (email: string, password: string) => Promise<void>;
   adminLogout: () => void;
 }
 
 const AdminAuthContext = createContext<AdminAuthContextType | undefined>(undefined);
 
-const ADMIN_CREDENTIALS = {
-  email: 'admin@store.com',
-  password: 'Admin123',
-};
-
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
-  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
-  const [adminEmail, setAdminEmail] = useState<string | null>(null);
-
-  // Check if admin session exists on mount
-  useEffect(() => {
-    const storedAdminSession = localStorage?.getItem('adminSession');
-    if (storedAdminSession === 'true') {
-      const storedEmail = localStorage?.getItem('adminEmail');
-      setIsAdminLoggedIn(true);
-      setAdminEmail(storedEmail);
-    }
-  }, []);
+  const { user, login, logout } = useAuth();
 
   const adminLogin = async (email: string, password: string) => {
-    return new Promise<void>((resolve, reject) => {
-      setTimeout(() => {
-        if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
-          setIsAdminLoggedIn(true);
-          setAdminEmail(email);
-          localStorage?.setItem('adminSession', 'true');
-          localStorage?.setItem('adminEmail', email);
-          resolve();
-        } else {
-          reject(new Error('Invalid admin credentials'));
-        }
-      }, 500);
-    });
+    try {
+      const result = await login(email, password);
+      // Verify user is admin
+      if (result.role !== 'admin') {
+        logout();
+        throw new Error('This account does not have admin access');
+      }
+    } catch (error) {
+      throw error;
+    }
   };
 
   const adminLogout = () => {
-    setIsAdminLoggedIn(false);
-    setAdminEmail(null);
-    localStorage?.removeItem('adminSession');
-    localStorage?.removeItem('adminEmail');
+    logout();
   };
+
+  // Check if current user is admin
+  const isAdminUser = user?.role === 'admin';
 
   return (
     <AdminAuthContext.Provider
       value={{
-        isAdminLoggedIn,
-        adminEmail,
+        adminUser: isAdminUser ? user : null,
+        isAdminLoggedIn: isAdminUser,
         adminLogin,
         adminLogout,
       }}
