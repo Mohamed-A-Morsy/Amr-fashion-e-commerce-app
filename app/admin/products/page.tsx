@@ -1,18 +1,16 @@
 'use client';
 
+import { AdminLayout } from '@/components/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { useLanguage } from '@/lib/context/LanguageContext';
 import Link from 'next/link';
-import { Menu, Search, Plus, Edit2, Trash2 } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2 } from 'lucide-react';
 import { products } from '@/lib/data/products';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-export default function AdminProductsPage() {
-  const { t } = useLanguage();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+function ProductsContent() {
   const [searchTerm, setSearchTerm] = useState('');
   const [productList, setProductList] = useState(products);
 
@@ -29,47 +27,20 @@ export default function AdminProductsPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-background">
-      {/* Sidebar */}
-      <aside className={`${isSidebarOpen ? 'w-64' : 'w-20'} border-r bg-sidebar transition-all duration-300 flex flex-col`}>
-        <div className="border-b p-4 flex items-center justify-between">
-          {isSidebarOpen && <h1 className="text-lg font-bold">Admin</h1>}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          >
-            <Menu className="h-4 w-4" />
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold">Products</h2>
+          <p className="text-muted-foreground mt-1">Manage your product inventory and details</p>
+        </div>
+        <Link href="/admin/products/new">
+          <Button className="gap-2">
+            <Plus className="h-4 w-4" />
+            Add Product
           </Button>
-        </div>
-
-        <nav className="flex-1 p-4 space-y-2">
-          <Link href="/admin">
-            <div className="flex items-center gap-3 rounded-lg p-3 hover:bg-sidebar-accent">
-              <span className="text-sm">Dashboard</span>
-            </div>
-          </Link>
-          <Link href="/admin/orders">
-            <div className="flex items-center gap-3 rounded-lg p-3 hover:bg-sidebar-accent">
-              <span className="text-sm">Orders</span>
-            </div>
-          </Link>
-          <Link href="/admin/products">
-            <div className="flex items-center gap-3 rounded-lg bg-sidebar-primary/20 p-3 text-sidebar-primary">
-              <span className="text-sm font-semibold">{t('admin.products')}</span>
-            </div>
-          </Link>
-        </nav>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 overflow-auto">
-        <div className="border-b bg-card p-6">
-          <h1 className="text-3xl font-bold">{t('admin.products')}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Manage your product inventory and details.</p>
-        </div>
-
-        <div className="p-6 space-y-6">
+        </Link>
+      </div>
           {/* Controls */}
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div className="relative flex-1 md:max-w-xs">
@@ -183,8 +154,14 @@ export default function AdminProductsPage() {
               </div>
             </div>
           </Card>
-        </div>
-      </main>
     </div>
+  );
+}
+
+export default function AdminProductsPage() {
+  return (
+    <AdminLayout>
+      <ProductsContent />
+    </AdminLayout>
   );
 }

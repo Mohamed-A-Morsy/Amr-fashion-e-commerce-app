@@ -2,11 +2,10 @@
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { useLanguage } from '@/lib/context/LanguageContext';
+import { AdminLayout } from '@/components/AdminLayout';
 import Link from 'next/link';
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { Package, ShoppingCart, Users, TrendingUp, AlertCircle, Settings, Menu } from 'lucide-react';
-import { useState } from 'react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { Package, ShoppingCart, Users, TrendingUp, AlertCircle } from 'lucide-react';
 
 const salesData = [
   { month: 'Jan', sales: 4000, orders: 24 },
@@ -34,95 +33,24 @@ const recentOrders = [
   { id: '#ORD005', customer: 'Tom Brown', amount: 279.99, status: 'delivered', date: '2024-04-04' },
 ];
 
-export default function AdminDashboard() {
-  const { t } = useLanguage();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'delivered':
+      return 'bg-green-100 text-green-800';
+    case 'shipped':
+      return 'bg-blue-100 text-blue-800';
+    case 'processing':
+      return 'bg-yellow-100 text-yellow-800';
+    case 'pending':
+      return 'bg-red-100 text-red-800';
+    default:
+      return 'bg-gray-100 text-gray-800';
+  }
+};
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'delivered':
-        return 'bg-green-100 text-green-800';
-      case 'shipped':
-        return 'bg-blue-100 text-blue-800';
-      case 'processing':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'pending':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
+function DashboardContent() {
   return (
-    <div className="flex min-h-screen bg-background">
-      {/* Sidebar */}
-      <aside className={`${isSidebarOpen ? 'w-64' : 'w-20'} border-r bg-sidebar transition-all duration-300 flex flex-col`}>
-        {/* Logo */}
-        <div className="border-b p-4 flex items-center justify-between">
-          {isSidebarOpen && <h1 className="text-lg font-bold">Admin</h1>}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          >
-            <Menu className="h-4 w-4" />
-          </Button>
-        </div>
-
-        {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-2">
-          <Link href="/admin">
-            <div className="flex items-center gap-3 rounded-lg bg-sidebar-primary/20 p-3 text-sidebar-primary">
-              <TrendingUp className="h-5 w-5 flex-shrink-0" />
-              {isSidebarOpen && <span className="text-sm font-semibold">Dashboard</span>}
-            </div>
-          </Link>
-
-          <Link href="/admin/orders">
-            <div className="flex items-center gap-3 rounded-lg p-3 hover:bg-sidebar-accent">
-              <ShoppingCart className="h-5 w-5 flex-shrink-0" />
-              {isSidebarOpen && <span className="text-sm">{t('admin.orders')}</span>}
-            </div>
-          </Link>
-
-          <Link href="/admin/products">
-            <div className="flex items-center gap-3 rounded-lg p-3 hover:bg-sidebar-accent">
-              <Package className="h-5 w-5 flex-shrink-0" />
-              {isSidebarOpen && <span className="text-sm">{t('admin.products')}</span>}
-            </div>
-          </Link>
-
-          <Link href="/admin/customers">
-            <div className="flex items-center gap-3 rounded-lg p-3 hover:bg-sidebar-accent">
-              <Users className="h-5 w-5 flex-shrink-0" />
-              {isSidebarOpen && <span className="text-sm">{t('admin.customers')}</span>}
-            </div>
-          </Link>
-
-          <Link href="/admin/analytics">
-            <div className="flex items-center gap-3 rounded-lg p-3 hover:bg-sidebar-accent">
-              <BarChart className="h-5 w-5 flex-shrink-0" />
-              {isSidebarOpen && <span className="text-sm">{t('admin.analytics')}</span>}
-            </div>
-          </Link>
-
-          <Link href="/admin/settings">
-            <div className="flex items-center gap-3 rounded-lg p-3 hover:bg-sidebar-accent">
-              <Settings className="h-5 w-5 flex-shrink-0" />
-              {isSidebarOpen && <span className="text-sm">{t('admin.settings')}</span>}
-            </div>
-          </Link>
-        </nav>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 overflow-auto">
-        <div className="border-b bg-card p-6">
-          <h1 className="text-3xl font-bold">{t('admin.dashboard')}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Welcome back! Here&apos;s your store overview.</p>
-        </div>
-
-        <div className="p-6 space-y-6">
+    <div className="space-y-6">
           {/* KPI Cards */}
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card className="p-6">
@@ -263,7 +191,13 @@ export default function AdminDashboard() {
             </div>
           </Card>
         </div>
-      </main>
-    </div>
+      );
+    }
+
+export default function AdminDashboard() {
+  return (
+    <AdminLayout>
+      <DashboardContent />
+    </AdminLayout>
   );
 }
