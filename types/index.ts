@@ -96,6 +96,8 @@ export interface Customer {
 }
 
 // User type (for auth)
+export type UserRole = 'admin' | 'customer';
+
 export interface User {
   id: string;
   name: string;
@@ -103,6 +105,7 @@ export interface User {
   password?: string;
   phone?: string;
   avatar?: string;
+  role: UserRole;
   createdAt: Date;
 }
 

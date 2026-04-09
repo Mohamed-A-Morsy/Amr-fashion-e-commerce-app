@@ -6,7 +6,7 @@ import { User } from '@/types';
 interface AuthContextType {
   user: User | null;
   isLoggedIn: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<{ role: 'admin' | 'customer' }>;
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
   updateProfile: (user: Partial<User>) => void;
@@ -14,7 +14,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Mock user database
+// Mock user database with both admin and customer users
 const mockUsers: User[] = [
   {
     id: '1',
@@ -22,6 +22,16 @@ const mockUsers: User[] = [
     email: 'john@example.com',
     password: 'password123',
     phone: '+1234567890',
+    role: 'customer',
+    createdAt: new Date(),
+  },
+  {
+    id: '2',
+    name: 'Admin User',
+    email: 'admin@store.com',
+    password: 'Admin123',
+    phone: '+1234567890',
+    role: 'admin',
     createdAt: new Date(),
   },
 ];
@@ -29,16 +39,16 @@ const mockUsers: User[] = [
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<{ role: 'admin' | 'customer' }> => {
     // Simulate API call
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<{ role: 'admin' | 'customer' }>((resolve, reject) => {
       setTimeout(() => {
         const foundUser = mockUsers.find((u) => u.email === email && u.password === password);
 
         if (foundUser) {
           const { password, ...userWithoutPassword } = foundUser;
           setUser(userWithoutPassword as User);
-          resolve();
+          resolve({ role: foundUser.role });
         } else {
           reject(new Error('Invalid email or password'));
         }
@@ -59,6 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             name,
             email,
             password,
+            role: 'customer',
             createdAt: new Date(),
           };
 
