@@ -1,13 +1,7 @@
-'use client';
-
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
-import { ThemeProvider } from 'next-themes'
-import { Toaster } from 'sonner'
-import { LanguageProvider } from '@/lib/context/LanguageContext'
-import { CartProvider } from '@/lib/context/CartContext'
-import { AuthProvider } from '@/lib/context/AuthContext'
+import { Providers } from '@/components/Providers'
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -44,17 +38,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="font-sans antialiased">
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          <LanguageProvider>
-            <CartProvider>
-              <AuthProvider>
-                {children}
-                <Toaster />
-                {process.env.NODE_ENV === 'production' && <Analytics />}
-              </AuthProvider>
-            </CartProvider>
-          </LanguageProvider>
-        </ThemeProvider>
+        <Providers>
+          {children}
+        </Providers>
+        {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
   )
