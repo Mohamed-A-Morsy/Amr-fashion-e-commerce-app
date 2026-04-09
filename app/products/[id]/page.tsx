@@ -8,9 +8,9 @@ import { useCart } from '@/lib/context/CartContext';
 import { useLanguage } from '@/lib/context/LanguageContext';
 import { useParams } from 'next/navigation';
 import { products } from '@/lib/data/products';
-import { Star, Heart, Share2, Truck, RotateCcw, Check } from 'lucide-react';
+import { Star, Heart, Share2, Truck, RotateCcw, Check, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { Card } from '@/components/ui/card';
 
@@ -21,10 +21,15 @@ export default function ProductDetailsPage() {
 
   const product = products.find((p) => p.id === id);
   const [selectedColor, setSelectedColor] = useState(product?.colors[0].id || '');
-  const [selectedSize, setSelectedSize] = useState(product?.sizes[0] || '');
+  const [selectedSize, setSelectedSize] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
-  const [mainImage, setMainImage] = useState(product?.images[0] || '');
+  const [mainImageIndex, setMainImageIndex] = useState(0);
+  const [sizeError, setSizeError] = useState(false);
+
+  useEffect(() => {
+    setMainImageIndex(0);
+  }, [selectedColor]);
 
   if (!product) {
     return (
@@ -41,12 +46,19 @@ export default function ProductDetailsPage() {
   }
 
   const selectedColorObj = product.colors.find((c) => c.id === selectedColor);
-  const displayImage = selectedColorObj?.images[0] || mainImage;
+  const colorImages = selectedColorObj?.images || [];
+  const displayImage = colorImages[mainImageIndex] || product.images[0];
   const discountedPrice = product.discount
     ? (product.price * (1 - product.discount / 100)).toFixed(2)
     : product.price.toFixed(2);
 
   const handleAddToCart = () => {
+    if (!selectedSize) {
+      setSizeError(true);
+      toast.error(t('message.select_size') || 'Please select a size');
+      return;
+    }
+    setSizeError(false);
     addToCart(product, selectedSize, selectedColor, quantity);
     toast.success(t('message.added_to_cart'));
   };
@@ -70,7 +82,6 @@ export default function ProductDetailsPage() {
         console.error('Error sharing:', err);
       }
     } else {
-      // Fallback: copy to clipboard
       navigator.clipboard.writeText(window.location.href);
       toast.success('Link copied to clipboard');
     }
@@ -100,47 +111,68 @@ export default function ProductDetailsPage() {
           </div>
         </div>
 
-        <div className="mx-auto max-w-7xl px-4 py-8">
-          <div className="grid gap-8 md:grid-cols-2">
-            {/* Product Images */}
-            <div>
-              <div className="relative mb-4 overflow-hidden rounded-lg bg-muted">
+        <div className="mx-auto max-w-7xl px-4 py-8 lg:py-12">
+          <div className="grid gap-8 lg:gap-12 lg:grid-cols-2">
+            {/* Product Gallery */}
+            <div className="flex flex-col gap-4">
+              {/* Main Image */}
+              <div className="relative overflow-hidden rounded-xl bg-muted aspect-square flex items-center justify-center group">
                 <img
                   src={displayImage}
                   alt={product.name}
-                  className="h-96 w-full object-cover md:h-full"
+                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
               </div>
-              <div className="grid grid-cols-4 gap-2">
-                {selectedColorObj?.images.map((img, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setMainImage(img)}
-                    className="rounded-lg border-2 border-transparent overflow-hidden hover:border-primary"
-                  >
-                    <img src={img} alt={`${product.name} ${idx}`} className="h-20 w-full object-cover" />
-                  </button>
-                ))}
-              </div>
+
+              {/* Thumbnail Gallery */}
+              {colorImages.length > 1 && (
+                <div className="flex gap-3 overflow-x-auto pb-2">
+                  {colorImages.map((img, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setMainImageIndex(idx)}
+                      className={`relative flex-shrink-0 rounded-lg overflow-hidden transition-all ${
+                        mainImageIndex === idx
+                          ? 'ring-2 ring-primary'
+                          : 'ring-1 ring-border hover:ring-primary'
+                      }`}
+                    >
+                      <img
+                        src={img}
+                        alt={`${product.name} view ${idx + 1}`}
+                        className="h-20 w-20 object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Product Info */}
-            <div>
-              <div className="mb-4">
-                <div className="flex items-center justify-between">
-                  <h1 className="text-3xl font-bold">{product.name}</h1>
-                  <Button
-                    variant="ghost"
-                    size="icon"
+            <div className="flex flex-col gap-6">
+              {/* Header */}
+              <div>
+                <div className="flex items-start justify-between gap-4 mb-4">
+                  <div className="flex-1">
+                    <h1 className="text-3xl md:text-4xl font-bold leading-tight">{product.name}</h1>
+                  </div>
+                  <button
                     onClick={handleWishlist}
-                    className={isWishlisted ? 'text-red-500' : ''}
+                    className={`flex-shrink-0 p-2 rounded-lg transition-colors ${
+                      isWishlisted
+                        ? 'bg-red-100 text-red-600'
+                        : 'bg-muted hover:bg-muted text-muted-foreground'
+                    }`}
                   >
-                    <Heart className="h-5 w-5" fill={isWishlisted ? 'currentColor' : 'none'} />
-                  </Button>
+                    <Heart
+                      className="h-6 w-6"
+                      fill={isWishlisted ? 'currentColor' : 'none'}
+                    />
+                  </button>
                 </div>
 
                 {/* Rating */}
-                <div className="mt-2 flex items-center gap-4">
+                <div className="flex items-center gap-4">
                   <div className="flex items-center gap-1">
                     {[...Array(5)].map((_, i) => (
                       <Star
@@ -150,112 +182,126 @@ export default function ProductDetailsPage() {
                     ))}
                   </div>
                   <span className="text-sm text-muted-foreground">
-                    {product.rating} ({product.reviews} reviews)
+                    {product.rating} ({product.reviews} {t('product.reviews') || 'reviews'})
                   </span>
                 </div>
+              </div>
 
-                {/* Price */}
-                <div className="mt-6 flex items-center gap-4">
-                  <span className="text-3xl font-bold">${discountedPrice}</span>
+              {/* Price Section */}
+              <div className="space-y-2">
+                <div className="flex items-baseline gap-3">
+                  <span className="text-4xl font-bold">${discountedPrice}</span>
                   {product.discount && (
                     <>
                       <span className="text-lg text-muted-foreground line-through">
                         ${product.price.toFixed(2)}
                       </span>
                       <span className="rounded-full bg-accent px-3 py-1 text-sm font-bold text-accent-foreground">
-                        Save {product.discount}%
+                        −{product.discount}%
                       </span>
                     </>
                   )}
                 </div>
 
                 {/* Stock Status */}
-                <div className="mt-4">
-                  {product.stock > 0 ? (
-                    <div className="flex items-center gap-2 text-green-600">
-                      <Check className="h-4 w-4" />
-                      <span className="text-sm font-semibold">In Stock</span>
-                    </div>
-                  ) : (
-                    <div className="text-sm font-semibold text-red-600">Out of Stock</div>
-                  )}
-                </div>
-
-                {/* Description */}
-                <p className="mt-6 text-muted-foreground">{product.fullDescription}</p>
+                {product.stock > 0 ? (
+                  <div className="flex items-center gap-2 text-green-600 text-sm font-semibold">
+                    <Check className="h-4 w-4" />
+                    In Stock ({product.stock} available)
+                  </div>
+                ) : (
+                  <div className="text-sm font-semibold text-red-600">Out of Stock</div>
+                )}
               </div>
 
-              {/* Selections */}
-              <div className="space-y-6 border-y py-6">
-                {/* Color Selection */}
-                <div>
-                  <label className="block text-sm font-semibold">{t('product.select_color')}</label>
-                  <div className="mt-3 flex flex-wrap gap-3">
-                    {product.colors.map((color) => (
-                      <button
-                        key={color.id}
-                        onClick={() => setSelectedColor(color.id)}
-                        className={`rounded-lg border-2 p-3 transition-all ${
+              {/* Description */}
+              <p className="text-muted-foreground leading-relaxed">{product.fullDescription}</p>
+
+              {/* Color Selection */}
+              <div className="space-y-3">
+                <label className="block text-sm font-semibold">{t('product.select_color')}</label>
+                <div className="flex gap-3">
+                  {product.colors.map((color) => (
+                    <button
+                      key={color.id}
+                      onClick={() => setSelectedColor(color.id)}
+                      className="group relative"
+                      title={color.name}
+                    >
+                      <div
+                        className={`h-10 w-10 rounded-full border-2 transition-all ${
                           selectedColor === color.id
-                            ? 'border-primary'
-                            : 'border-border hover:border-muted-foreground'
+                            ? 'border-primary scale-110'
+                            : 'border-border hover:border-foreground/30'
                         }`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <div
-                            className="h-6 w-6 rounded-full border"
-                            style={{ backgroundColor: color.hex }}
-                          />
-                          <span className="text-sm font-medium">{color.name}</span>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Size Selection */}
-                <div>
-                  <label className="block text-sm font-semibold">{t('product.select_size')}</label>
-                  <div className="mt-3 grid grid-cols-4 gap-2">
-                    {product.sizes.map((size) => (
-                      <button
-                        key={size}
-                        onClick={() => setSelectedSize(size)}
-                        className={`rounded border py-2 text-sm font-medium transition-all ${
-                          selectedSize === size
-                            ? 'border-primary bg-primary text-primary-foreground'
-                            : 'border-border hover:border-muted-foreground'
-                        }`}
-                      >
-                        {size}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Quantity */}
-                <div>
-                  <label className="block text-sm font-semibold">{t('product.quantity')}</label>
-                  <div className="mt-3 flex items-center gap-3">
-                    <button
-                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="rounded border border-border px-3 py-2 hover:bg-muted"
-                    >
-                      −
+                        style={{ backgroundColor: color.hex }}
+                      />
+                      <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block whitespace-nowrap text-xs font-medium bg-foreground text-background px-2 py-1 rounded">
+                        {color.name}
+                      </span>
                     </button>
-                    <span className="w-12 text-center font-semibold">{quantity}</span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Size Selection */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-semibold">
+                    {t('product.select_size')}
+                  </label>
+                  {sizeError && (
+                    <span className="text-xs text-red-600 font-medium">Required</span>
+                  )}
+                </div>
+                <div className="grid grid-cols-4 gap-2">
+                  {product.sizes.map((size) => (
                     <button
-                      onClick={() => setQuantity(quantity + 1)}
-                      className="rounded border border-border px-3 py-2 hover:bg-muted"
+                      key={size}
+                      onClick={() => {
+                        setSelectedSize(size);
+                        setSizeError(false);
+                      }}
+                      className={`py-2.5 px-3 rounded-lg text-sm font-semibold transition-all ${
+                        selectedSize === size
+                          ? 'bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2'
+                          : `border border-border hover:border-foreground/50 ${
+                              sizeError
+                                ? 'border-red-300 bg-red-50'
+                                : 'bg-background'
+                            }`
+                      }`}
                     >
-                      +
+                      {size}
                     </button>
-                  </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Quantity */}
+              <div className="space-y-3">
+                <label className="block text-sm font-semibold">{t('product.quantity')}</label>
+                <div className="flex items-center border border-border rounded-lg p-1 w-fit">
+                  <button
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    className="px-3 py-2 hover:bg-muted rounded transition-colors"
+                  >
+                    −
+                  </button>
+                  <span className="px-4 py-2 font-semibold min-w-12 text-center">
+                    {quantity}
+                  </span>
+                  <button
+                    onClick={() => setQuantity(quantity + 1)}
+                    className="px-3 py-2 hover:bg-muted rounded transition-colors"
+                  >
+                    +
+                  </button>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="mt-6 space-y-3">
+              <div className="space-y-3 pt-4">
                 <Button
                   size="lg"
                   className="w-full"
@@ -264,16 +310,8 @@ export default function ProductDetailsPage() {
                 >
                   {t('button.add_to_cart')}
                 </Button>
-                <Link href="/checkout" className="block">
-                  <Button size="lg" variant="outline" className="w-full">
-                    {t('button.buy_now')}
-                  </Button>
-                </Link>
-              </div>
-
-              {/* Share */}
-              <div className="mt-4">
                 <Button
+                  size="lg"
                   variant="outline"
                   className="w-full"
                   onClick={handleShare}
@@ -284,16 +322,16 @@ export default function ProductDetailsPage() {
               </div>
 
               {/* Trust Badges */}
-              <div className="mt-8 space-y-3 rounded-lg bg-muted/30 p-4">
-                <div className="flex items-center gap-3">
-                  <Truck className="h-5 w-5 text-primary" />
+              <div className="space-y-3 border-t pt-6">
+                <div className="flex gap-3">
+                  <Truck className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
                   <div>
                     <p className="text-sm font-semibold">Free Shipping</p>
                     <p className="text-xs text-muted-foreground">On orders over $100</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <RotateCcw className="h-5 w-5 text-primary" />
+                <div className="flex gap-3">
+                  <RotateCcw className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
                   <div>
                     <p className="text-sm font-semibold">Easy Returns</p>
                     <p className="text-xs text-muted-foreground">30-day return policy</p>
@@ -304,7 +342,7 @@ export default function ProductDetailsPage() {
           </div>
 
           {/* Tabs */}
-          <Tabs defaultValue="description" className="mt-12">
+          <Tabs defaultValue="description" className="mt-16 border-t pt-12">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="description">{t('product.description')}</TabsTrigger>
               <TabsTrigger value="size-guide">{t('product.size_guide')}</TabsTrigger>

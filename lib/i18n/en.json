@@ -126,5 +126,6 @@
   "message.added_to_cart": "Added to cart successfully",
   "message.removed_from_cart": "Removed from cart",
   "message.added_to_wishlist": "Added to wishlist",
-  "message.removed_from_wishlist": "Removed from wishlist"
+  "message.removed_from_wishlist": "Removed from wishlist",
+  "message.select_size": "Please select a size before adding to cart"
 }

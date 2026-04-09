@@ -126,5 +126,6 @@
   "message.added_to_cart": "تم الإضافة إلى السلة بنجاح",
   "message.removed_from_cart": "تم الحذف من السلة",
   "message.added_to_wishlist": "تم الإضافة إلى المفضلة",
-  "message.removed_from_wishlist": "تم الحذف من المفضلة"
+  "message.removed_from_wishlist": "تم الحذف من المفضلة",
+  "message.select_size": "يرجى اختيار المقاس قبل الإضافة إلى السلة"
 }
