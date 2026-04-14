@@ -8,19 +8,28 @@ import { AuthProvider } from '@/lib/context/AuthContext';
 import { AdminAuthProvider } from '@/lib/context/AdminAuthContext';
 import { ReactNode } from 'react';
 
-export function Providers({ children }: { children: ReactNode }) {
+type ProvidersProps = {
+  children: ReactNode;
+};
+
+export function Providers({ children }: ProvidersProps) {
   return (
-    <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-      <AdminAuthProvider>
-        <LanguageProvider>
-          <CartProvider>
-            <AuthProvider>
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="light"
+      enableSystem
+      disableTransitionOnChange
+    >
+      <AuthProvider>
+        <AdminAuthProvider>
+          <LanguageProvider>
+            <CartProvider>
               {children}
               <Toaster />
-            </AuthProvider>
-          </CartProvider>
-        </LanguageProvider>
-      </AdminAuthProvider>
+            </CartProvider>
+          </LanguageProvider>
+        </AdminAuthProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }
