@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Language } from '@/types';
 import en from '@/lib/i18n/en.json';
 import ar from '@/lib/i18n/ar.json';
@@ -16,6 +16,7 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguage] = useState<Language>('en');
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const translations = {
     en,
@@ -37,11 +38,28 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   const isRTL = language === 'ar';
 
+  // Load language from localStorage on mount
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('language') as Language;
+    if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'ar')) {
+      setLanguage(savedLanguage);
+      document.documentElement.lang = savedLanguage;
+      document.documentElement.dir = savedLanguage === 'ar' ? 'rtl' : 'ltr';
+    }
+    setIsLoaded(true);
+  }, []);
+
   const handleLanguageChange = (lang: Language) => {
     setLanguage(lang);
+    localStorage.setItem('language', lang);
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
   };
+
+  // Don't render children until we've loaded the language from localStorage
+  if (!isLoaded) {
+    return null;
+  }
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage: handleLanguageChange, t, isRTL }}>
