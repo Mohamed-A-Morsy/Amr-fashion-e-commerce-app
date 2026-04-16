@@ -96,7 +96,6 @@ export interface Customer {
 }
 
 // User type (for auth)
-export type UserRole = 'admin' | 'customer';
 
 export interface User {
   id: string;

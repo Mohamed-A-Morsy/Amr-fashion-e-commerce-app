@@ -13,7 +13,7 @@ export function Footer() {
     <footer className="border-t bg-muted/30 py-12">
       <div className="mx-auto max-w-7xl px-4 md:px-6">
         {/* Newsletter Section */}
-        <div className="mb-12 rounded-lg bg-primary p-8 text-primary-foreground">
+        {/* <div className="mb-12 rounded-lg bg-primary p-8 text-primary-foreground">
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <h2 className="text-2xl font-bold">{t('footer.newsletter')}</h2>
@@ -30,7 +30,7 @@ export function Footer() {
               <Button variant="secondary">{t('button.subscribe')}</Button>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Links Grid */}
         <div className="grid gap-8 md:grid-cols-4">

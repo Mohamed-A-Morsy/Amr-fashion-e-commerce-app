@@ -12,9 +12,8 @@ import { ArrowRight, ShoppingBag, Star, Truck, RotateCcw } from 'lucide-react';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion'; // استيراد Framer Motion
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 
-// إعدادات الأنيميشن الافتراضية للعناصر (Variants)
 const fadeInUp = {
   initial: { opacity: 0, y: 60 },
   animate: { opacity: 1, y: 0 },
@@ -34,142 +33,344 @@ export default function Home() {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const springX = useSpring(mouseX, { stiffness: 120, damping: 20 });
+  const springY = useSpring(mouseY, { stiffness: 120, damping: 20 });
+
+  const rotateSceneX = useTransform(springY, [-200, 200], [10, -10]);
+  const rotateSceneY = useTransform(springX, [-200, 200], [-12, 12]);
+
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  const handleHeroMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+
+    mouseX.set(x);
+    mouseY.set(y);
+  };
+
+  const handleHeroMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+  };
+
   const featuredProducts = products.filter((p) => p.isFeatured).slice(0, 4);
-  
-  // صور التيشيرتات للهيرو (تأكد من وجود صور بخلفية شفافة PNG بجودة عالية)
+
   const heroTshirts = [
-    '/images/tshirtWhite_out.png', // مثال: تيشيرت أبيض
-    
+    '/images/tshirtblack_out.png',
+    '/images/tshirtwhite_out.png',
+    '/images/tshirtblack_out.png',
   ];
 
   if (!mounted) return null;
 
   return (
-    <motion.div 
-      initial="initial" 
-      animate="animate" 
+    <motion.div
+      initial="initial"
+      animate="animate"
       className="flex min-h-screen flex-col bg-background selection:bg-primary selection:text-primary-foreground overflow-x-hidden"
     >
       <Header />
 
       <main className="flex-1">
-        {/* --- 🔥 New Animated Hero Section 🔥 --- */}
-        <section className="relative min-h-[90vh] flex items-center bg-muted/20 pt-20 md:pt-0">
-          <div className="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
-            
-            {/* القسم الأيسر: النص المحرك */}
-            <motion.div variants={stagger} className="space-y-6 text-center md:text-left">
-              <motion.div 
+        <section className="relative min-h-[78vh] md:min-h-[82vh] flex items-center bg-muted/20 pt-24 md:pt-12 pb-8 md:pb-6 overflow-hidden">
+          <div
+            className={`container mx-auto px-4 grid md:grid-cols-2 gap-8 lg:gap-10 items-center ${
+              isRTL ? 'md:[&>*:first-child]:order-2 md:[&>*:last-child]:order-1' : ''
+            }`}
+          >
+            <motion.div
+              variants={stagger}
+              className={`space-y-5 text-center ${isRTL ? 'md:text-right' : 'md:text-left'}`}
+            >
+              <motion.div
                 variants={fadeInUp}
-                className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-xs md:text-sm font-semibold text-primary backdrop-blur-md"
+                className={`inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-xs md:text-sm font-semibold text-primary backdrop-blur-md ${
+                  isRTL ? 'flex-row-reverse' : ''
+                }`}
               >
-                <span className="mr-2">🚀</span> {isRTL ? 'وصل حديثاً: مجموعة صيف 2024' : 'Just Dropped: Summer 24 Collection'}
+                <span className={isRTL ? 'ml-2' : 'mr-2'}>🚀</span>
+                {t('hero.new_collection')}
               </motion.div>
-              
-              <motion.h1 
+
+              <motion.h1
                 variants={fadeInUp}
-                className="text-balance text-5xl font-extrabold tracking-tighter sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl italic uppercase leading-[0.85]"
+                className="text-balance text-4xl font-extrabold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl italic uppercase leading-[0.88]"
               >
-                Wear <br /> 
-                <span className="text-primary relative">
-                  Your
-                  <motion.span 
-                    className="absolute -bottom-2 left-0 h-2 w-full bg-accent"
-                    initial={{ width: 0 }}
-                    animate={{ width: '100%' }}
-                    transition={{ delay: 1, duration: 0.8 }}
-                  />
-                </span><br /> 
-                Vibe.
+                {isRTL ? (
+                  <>
+                    البس <br />
+                    <span className="text-primary relative inline-block">
+                      بطريقتك
+                      <motion.span
+                        className="absolute -bottom-2 right-0 h-2 w-full bg-accent"
+                        initial={{ width: 0 }}
+                        animate={{ width: '100%' }}
+                        transition={{ delay: 1, duration: 0.8 }}
+                        style={{ transformOrigin: 'right' }}
+                      />
+                    </span>
+                    <br />
+                    .
+                  </>
+                ) : (
+                  <>
+                    Wear <br />
+                    <span className="text-primary relative inline-block">
+                      Your
+                      <motion.span
+                        className="absolute -bottom-2 left-0 h-2 w-full bg-accent"
+                        initial={{ width: 0 }}
+                        animate={{ width: '100%' }}
+                        transition={{ delay: 1, duration: 0.8 }}
+                        style={{ transformOrigin: 'left' }}
+                      />
+                    </span>
+                    <br />
+                    Vibe.
+                  </>
+                )}
               </motion.h1>
-              
-              <motion.p 
+
+              <motion.p
                 variants={fadeInUp}
-                className="mt-6 max-w-lg mx-auto md:mx-0 text-lg text-muted-foreground md:text-xl font-medium"
+                className={`max-w-md text-base text-muted-foreground md:text-lg font-medium ${
+                  isRTL ? 'mx-auto md:mr-0 md:ml-auto' : 'mx-auto md:mx-0'
+                }`}
               >
-                Premium cotton tees designed for supreme comfort and standout style. Streetwear, refined.
+                {t('hero.description')}
               </motion.p>
-              
-              <motion.div variants={fadeInUp} className="mt-10 flex flex-col gap-4 sm:flex-row justify-center md:justify-start">
+
+              <motion.div
+                variants={fadeInUp}
+                className={`pt-2 flex flex-col gap-3 sm:flex-row justify-center ${
+                  isRTL ? 'sm:flex-row-reverse md:justify-end' : 'md:justify-start'
+                }`}
+              >
                 <Link href="/shop">
-                  <Button size="lg" className="h-14 px-10 text-lg rounded-full w-full sm:w-auto font-bold group">
-                    Shop Tees <ShoppingBag className="ml-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+                  <Button
+                    size="lg"
+                    className={`h-12 px-8 text-base rounded-full w-full sm:w-auto font-bold group ${
+                      isRTL ? 'flex-row-reverse' : ''
+                    }`}
+                  >
+                    {t('hero.shop_tees')}
+                    <ShoppingBag
+                      className={`${isRTL ? 'mr-2' : 'ml-2'} h-5 w-5 group-hover:scale-110 transition-transform`}
+                    />
                   </Button>
                 </Link>
+
                 <Link href="/about">
-                  <Button variant="outline" size="lg" className="h-14 px-10 text-lg rounded-full w-full sm:w-auto font-semibold backdrop-blur-sm">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="h-12 px-8 text-base rounded-full w-full sm:w-auto font-semibold backdrop-blur-sm"
+                  >
                     {t('footer.about')}
                   </Button>
                 </Link>
               </motion.div>
             </motion.div>
 
-            {/* القسم الأيمن: عرض التيشيرتات المتحرك (Visual) */}
-            <motion.div 
-              initial={{ opacity: 0, x: 100 }}
+            <motion.div
+              initial={{ opacity: 0, x: isRTL ? -100 : 100 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative aspect-square flex items-center justify-center lg:scale-110"
+              onMouseMove={handleHeroMouseMove}
+              onMouseLeave={handleHeroMouseLeave}
+              className="relative h-[320px] sm:h-[380px] md:h-[460px] lg:h-[520px] flex items-center justify-center [perspective:1800px]"
             >
-              {/* دوائر خلفية جمالية محركة */}
-              <motion.div 
+              <motion.div
+                animate={{ scale: [1, 1.08, 1], opacity: [0.35, 0.55, 0.35] }}
+                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+                className="absolute h-[70%] w-[70%] rounded-full bg-primary/10 blur-3xl"
+              />
+
+              <motion.div
                 animate={{ rotate: 360 }}
-                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                className="absolute inset-0 border-2 border-dashed border-primary/20 rounded-full"
+                transition={{ duration: 22, repeat: Infinity, ease: 'linear' }}
+                className="absolute inset-4 rounded-full border border-dashed border-primary/20"
               />
-               <motion.div 
+              <motion.div
                 animate={{ rotate: -360 }}
-                transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                className="absolute inset-10 border border-accent/20 rounded-full"
+                transition={{ duration: 16, repeat: Infinity, ease: 'linear' }}
+                className="absolute inset-10 rounded-full border border-accent/20"
               />
 
-              {/* التيشيرتات المحركة (Parallax effective on hover) */}
-              {heroTshirts.map((src, index) => (
-                <motion.div
-                  key={index}
-                  className="absolute"
-                  style={{
-                    zIndex: heroTshirts.length - index,
-                  }}
-                  animate={{
-                    y: [0, -20, 0], // حركة طفو هادئة
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    delay: index * 0.5,
-                    ease: "easeInOut"
-                  }}
-                  whileHover={{ 
-                    scale: 1.05, 
-                    zIndex: 10,
-                    transition: { duration: 0.2 } 
-                  }}
-                >
-                  <Image 
-                    src={src} 
-                    alt={`Tshirt ${index + 1}`} 
-                    width={500} 
-                    height={500} 
-                    className={`object-contain ${index === 0 ? 'w-80 md:w-96 lg:w-[450px]' : 'w-60 md:w-72 lg:w-[350px] opacity-70'} drop-shadow-2xl`}
-                    // تأثير إزاحة بسيط لكل تيشيرت ليعطي عمق
-                    style={{
-                        transform: `translateX(${(index - 1) * 80}px) translateY(${(index - 1) * -30}px) rotate(${(index - 1) * -5}deg)`
-                    }}
-                  />
-                </motion.div>
-              ))}
-            </motion.div>
+              <motion.div
+                style={{
+                  rotateX: rotateSceneX,
+                  rotateY: rotateSceneY,
+                  transformStyle: 'preserve-3d',
+                }}
+                className="relative h-full w-full flex items-center justify-center"
+              >
+                {heroTshirts.map((src, index) => {
+                  const isMain = index === 1;
 
+                  const positions = isRTL
+                    ? [
+                        {
+                          x: 120,
+                          y: 35,
+                          rotateZ: 14,
+                          rotateY: 18,
+                          z: -80,
+                          width: 'w-40 sm:w-44 md:w-52 lg:w-[250px]',
+                          opacity: 'opacity-80',
+                        },
+                        {
+                          x: 0,
+                          y: -20,
+                          rotateZ: 0,
+                          rotateY: 0,
+                          z: 120,
+                          width: 'w-56 sm:w-64 md:w-72 lg:w-[360px]',
+                          opacity: 'opacity-100',
+                        },
+                        {
+                          x: -120,
+                          y: 40,
+                          rotateZ: -14,
+                          rotateY: -18,
+                          z: -80,
+                          width: 'w-40 sm:w-44 md:w-52 lg:w-[250px]',
+                          opacity: 'opacity-80',
+                        },
+                      ]
+                    : [
+                        {
+                          x: -120,
+                          y: 35,
+                          rotateZ: -14,
+                          rotateY: -18,
+                          z: -80,
+                          width: 'w-40 sm:w-44 md:w-52 lg:w-[250px]',
+                          opacity: 'opacity-80',
+                        },
+                        {
+                          x: 0,
+                          y: -20,
+                          rotateZ: 0,
+                          rotateY: 0,
+                          z: 120,
+                          width: 'w-56 sm:w-64 md:w-72 lg:w-[360px]',
+                          opacity: 'opacity-100',
+                        },
+                        {
+                          x: 120,
+                          y: 40,
+                          rotateZ: 14,
+                          rotateY: 18,
+                          z: -80,
+                          width: 'w-40 sm:w-44 md:w-52 lg:w-[250px]',
+                          opacity: 'opacity-80',
+                        },
+                      ];
+
+                  const item = positions[index];
+
+                  return (
+                    <motion.div
+                      key={index}
+                      className="absolute"
+                      style={{
+                        transformStyle: 'preserve-3d',
+                        zIndex: isMain ? 30 : 10,
+                      }}
+                      animate={{
+                        y: [item.y, item.y - 14, item.y],
+                        rotateY: [item.rotateY, item.rotateY + 180, item.rotateY + 360],
+                      }}
+                      transition={{
+                        y: {
+                          duration: 4 + index,
+                          repeat: Infinity,
+                          ease: 'easeInOut',
+                        },
+                        rotateY: {
+                          duration: isMain ? 10 : 12,
+                          repeat: Infinity,
+                          ease: 'linear',
+                          delay: index * 0.5,
+                        },
+                      }}
+                      whileHover={{
+                        scale: 1.05,
+                        z: 180,
+                        transition: { duration: 0.3 },
+                      }}
+                    >
+                      <div
+                        style={{
+                          transform: `translate3d(${item.x}px, ${item.y}px, ${item.z}px) rotateZ(${item.rotateZ}deg)`,
+                          transformStyle: 'preserve-3d',
+                        }}
+                        className="relative"
+                      >
+                        <div
+                          style={{
+                            transformStyle: 'preserve-3d',
+                          }}
+                          className="relative"
+                        >
+                          <div
+                            style={{
+                              backfaceVisibility: 'hidden',
+                              WebkitBackfaceVisibility: 'hidden',
+                            }}
+                            className={`relative ${item.width} ${item.opacity} drop-shadow-[0_25px_45px_rgba(0,0,0,0.22)]`}
+                          >
+                            <Image
+                              src={src}
+                              alt={`Tshirt front ${index + 1}`}
+                              width={500}
+                              height={500}
+                              className="object-contain"
+                              priority={isMain}
+                            />
+                          </div>
+
+                          <div
+                            style={{
+                              transform: 'rotateY(180deg) scaleX(-1)',
+                              backfaceVisibility: 'hidden',
+                              WebkitBackfaceVisibility: 'hidden',
+                            }}
+                            className={`absolute inset-0 ${item.width} ${item.opacity} drop-shadow-[0_25px_45px_rgba(0,0,0,0.18)]`}
+                          >
+                            <Image
+                              src={src}
+                              alt={`Tshirt back ${index + 1}`}
+                              width={500}
+                              height={500}
+                              className="object-contain"
+                            />
+                          </div>
+                        </div>
+
+                        <motion.div
+                          animate={{ scaleX: [1, 1.05, 1], opacity: [0.14, 0.22, 0.14] }}
+                          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                          className="absolute left-1/2 top-[85%] h-5 w-[55%] -translate-x-1/2 rounded-full bg-black/20 blur-xl"
+                        />
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
+            </motion.div>
           </div>
         </section>
 
-        {/* --- Features Section (Animate on Scroll) --- */}
-        <motion.section 
+        <motion.section
           initial="initial"
           whileInView="animate"
           viewport={{ once: true, amount: 0.3 }}
@@ -179,11 +380,11 @@ export default function Home() {
           <div className="mx-auto max-w-7xl px-4">
             <div className="grid gap-10 md:grid-cols-3">
               {[
-                { icon: <Truck />, title: "Express Delivery", desc: "Free on orders over $100. Fast worldwide." },
-                { icon: <RotateCcw />, title: "Easy Returns", desc: "30-day hassle-free return policy." },
-                { icon: <Star />, title: "Premium Quality", desc: "100% combed cotton. Built to last." },
+                { icon: <Truck />, title: t('features.express_delivery'), desc: t('features.express_delivery_desc') },
+                { icon: <RotateCcw />, title: t('features.easy_returns'), desc: t('features.easy_returns_desc') },
+                { icon: <Star />, title: t('features.premium_quality'), desc: t('features.premium_quality_desc') },
               ].map((item, i) => (
-                <motion.div 
+                <motion.div
                   key={i}
                   variants={fadeInUp}
                   className="flex flex-col items-center text-center p-8 bg-background rounded-3xl border shadow-sm hover:shadow-lg transition-shadow duration-300"
@@ -201,12 +402,11 @@ export default function Home() {
           </div>
         </motion.section>
 
-        {/* --- Featured Products (Modern Cards & Scroll Animate) --- */}
-        <motion.section 
-           initial="initial"
-           whileInView="animate"
-           viewport={{ once: true, amount: 0.1 }}
-           className="py-24"
+        <motion.section
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true, amount: 0.1 }}
+          className="py-24"
         >
           <div className="mx-auto max-w-7xl px-4">
             <motion.div variants={fadeInUp} className="flex items-center justify-between mb-12">
@@ -218,7 +418,7 @@ export default function Home() {
               </Link>
             </motion.div>
 
-            <motion.div 
+            <motion.div
               variants={stagger}
               className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4"
             >
@@ -238,17 +438,17 @@ export default function Home() {
                             -{product.discount}%
                           </div>
                         )}
-                         <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
-                            <Button className="w-full rounded-full font-bold shadow-lg">Quick View</Button>
-                         </div>
+                        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
+                          <Button className="w-full rounded-full font-bold shadow-lg">Quick View</Button>
+                        </div>
                       </div>
                       <div className="p-6">
                         <div className="flex justify-between items-start gap-2">
-                            <h3 className="font-bold text-lg leading-tight group-hover:text-primary transition-colors">{product.name}</h3>
-                            <div className="flex items-center gap-1 flex-shrink-0 mt-0.5">
-                                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                                <span className="text-sm font-bold">{product.rating}</span>
-                            </div>
+                          <h3 className="font-bold text-lg leading-tight group-hover:text-primary transition-colors">{product.name}</h3>
+                          <div className="flex items-center gap-1 flex-shrink-0 mt-0.5">
+                            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                            <span className="text-sm font-bold">{product.rating}</span>
+                          </div>
                         </div>
                         <p className="mt-2 text-sm text-muted-foreground line-clamp-2 font-medium">{product.description}</p>
                         <div className="mt-5 flex items-end justify-between">
@@ -265,7 +465,7 @@ export default function Home() {
                             )}
                           </div>
                           <div className="rounded-full bg-background border p-2 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                             <ShoppingBag className="h-5 w-5" />
+                            <ShoppingBag className="h-5 w-5" />
                           </div>
                         </div>
                       </div>
@@ -276,10 +476,6 @@ export default function Home() {
             </motion.div>
           </div>
         </motion.section>
-
-        {/* باقي الأقسام (Categories, New Arrivals, CTA) يجب أيضاً تحديثها بنفس الروح */}
-        {/* سأكتفي بهذا القدر ليوضح الفكرة العامة للتغيير الجذري */}
-
       </main>
 
       <Footer />

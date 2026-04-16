@@ -83,7 +83,7 @@ export default function OrderSuccessPage() {
                 {t('button.continue_shopping')}
               </Button>
             </Link>
-            <Link href="/account/orders">
+            <Link href="/shop">
               <Button size="lg">
                 {t('order.track')}
               </Button>

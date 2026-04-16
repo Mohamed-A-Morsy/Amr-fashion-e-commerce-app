@@ -4,8 +4,6 @@ import { ThemeProvider } from 'next-themes';
 import { Toaster } from 'sonner';
 import { LanguageProvider } from '@/lib/context/LanguageContext';
 import { CartProvider } from '@/lib/context/CartContext';
-import { AuthProvider } from '@/lib/context/AuthContext';
-import { AdminAuthProvider } from '@/lib/context/AdminAuthContext';
 import { ReactNode } from 'react';
 
 type ProvidersProps = {
@@ -20,16 +18,12 @@ export function Providers({ children }: ProvidersProps) {
       enableSystem
       disableTransitionOnChange
     >
-      <AuthProvider>
-        <AdminAuthProvider>
-          <LanguageProvider>
-            <CartProvider>
-              {children}
-              <Toaster />
-            </CartProvider>
-          </LanguageProvider>
-        </AdminAuthProvider>
-      </AuthProvider>
+      <LanguageProvider>
+        <CartProvider>
+          {children}
+          <Toaster />
+        </CartProvider>
+      </LanguageProvider>
     </ThemeProvider>
   );
 }
