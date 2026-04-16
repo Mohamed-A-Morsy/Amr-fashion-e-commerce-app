@@ -95,19 +95,6 @@ export interface Customer {
   createdAt: Date;
 }
 
-// User type (for auth)
-
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  password?: string;
-  phone?: string;
-  avatar?: string;
-  role: UserRole;
-  createdAt: Date;
-}
-
 // Analytics types
 export interface AnalyticsMetrics {
   totalOrders: number;
