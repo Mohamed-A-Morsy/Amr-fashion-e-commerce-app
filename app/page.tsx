@@ -478,7 +478,7 @@ export default function Home() {
         </motion.section>
       </main>
 
-      <Footer />
+      {/* <Footer /> */}
     </motion.div>
   );
 }

@@ -51,11 +51,7 @@ export function Footer() {
                   All Products
                 </Link>
               </li>
-              <li>
-                <Link href="/categories" className="text-muted-foreground hover:text-foreground">
-                  {t('nav.categories')}
-                </Link>
-              </li>
+          
               <li>
                 <Link href="/shop?filter=new" className="text-muted-foreground hover:text-foreground">
                   New Arrivals
@@ -83,16 +79,7 @@ export function Footer() {
                   {t('footer.contact')}
                 </Link>
               </li>
-              <li>
-                <Link href="/careers" className="text-muted-foreground hover:text-foreground">
-                  Careers
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog" className="text-muted-foreground hover:text-foreground">
-                  Blog
-                </Link>
-              </li>
+          
             </ul>
           </div>
 
