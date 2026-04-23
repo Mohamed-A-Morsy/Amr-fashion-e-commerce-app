@@ -2,194 +2,114 @@
 
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { useLanguage } from '@/lib/context/LanguageContext';
-import { Mail, Phone, MapPin, MessageSquare } from 'lucide-react';
-import { useState } from 'react';
-import { toast } from 'sonner';
+import { Mail, Phone, MapPin } from 'lucide-react';
+
+const contactItems = {
+  email: 'support@example.com',
+  phoneDisplay: '+20 103 005 5222',
+  phoneLink: '+201030088222',
+  addressEn: 'Cairo, Egypt',
+  addressAr: 'القاهرة، مصر',
+};
 
 export default function ContactPage() {
-  const { t } = useLanguage();
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
-  const [isLoading, setIsLoading] = useState(false);
-  const [expandedFAQ, setExpandedFAQ] = useState<number | null>(null);
+  const { t, isRTL } = useLanguage();
 
-  const faqItems = [
+  const cards = [
     {
-      question: 'What is your return policy?',
-      answer: 'We offer a 30-day return policy on all items. Products must be unworn and in original condition.',
+      icon: Mail,
+      title: isRTL ? 'البريد الإلكتروني' : 'Email',
+      value: contactItems.email,
+      subtext: isRTL ? 'راسلنا مباشرة على البريد الإلكتروني' : 'Send us an email anytime',
+      href: `mailto:${contactItems.email}`,
     },
     {
-      question: 'How long does shipping take?',
-      answer: 'Standard shipping takes 5-7 business days. Express shipping is available for 2-3 business days.',
+      icon: Phone,
+      title: isRTL ? 'رقم الهاتف' : 'Phone',
+      value: contactItems.phoneDisplay,
+      subtext: isRTL ? 'اتصل بنا مباشرة في مواعيد العمل' : 'Call us directly during business hours',
+      href: `tel:${contactItems.phoneLink}`,
     },
     {
-      question: 'Do you offer international shipping?',
-      answer: 'Yes, we ship worldwide. Shipping costs vary based on location and order value.',
-    },
-    {
-      question: 'How can I track my order?',
-      answer: 'You&apos;ll receive a tracking number via email once your order ships. You can use it to track your package.',
+      icon: MapPin,
+      title: isRTL ? 'العنوان' : 'Address',
+      value: isRTL ? contactItems.addressAr : contactItems.addressEn,
+      subtext: isRTL ? 'زورنا أو تواصل معنا في أي وقت' : 'Visit us or reach out anytime',
+      href: null,
     },
   ];
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      // Simulate form submission
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      toast.success('Message sent successfully! We&apos;ll get back to you soon.');
-      setFormData({ name: '', email: '', message: '' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-background">
       <Header />
 
       <main className="flex-1">
-        {/* Page Header */}
-        <div className="border-b bg-muted/30 py-8">
-          <div className="mx-auto max-w-7xl px-4">
-            <h1 className="text-3xl font-bold">{t('footer.contact')}</h1>
-            <p className="mt-2 text-muted-foreground">
-              We&apos;d love to hear from you. Get in touch with us today.
-            </p>
-          </div>
-        </div>
-
-        <div className="mx-auto max-w-7xl px-4 py-8">
-          <div className="grid gap-8 lg:grid-cols-3">
-            {/* Contact Information */}
-            <div className="space-y-6">
-              <Card className="p-6">
-                <div className="flex items-start gap-4">
-                  <Mail className="mt-1 h-6 w-6 text-primary" />
-                  <div>
-                    <h3 className="font-semibold">Email</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">support@example.com</p>
-                    <p className="text-sm text-muted-foreground">We respond within 24 hours</p>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="p-6">
-                <div className="flex items-start gap-4">
-                  <Phone className="mt-1 h-6 w-6 text-primary" />
-                  <div>
-                    <h3 className="font-semibold">Phone</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">+1 (555) 000-0000</p>
-                    <p className="text-sm text-muted-foreground">Mon - Fri, 9am - 6pm EST</p>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="p-6">
-                <div className="flex items-start gap-4">
-                  <MapPin className="mt-1 h-6 w-6 text-primary" />
-                  <div>
-                    <h3 className="font-semibold">Office</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">123 Fashion Street</p>
-                    <p className="text-sm text-muted-foreground">New York, NY 10001</p>
-                  </div>
-                </div>
-              </Card>
-
-              <Button className="w-full" size="lg" variant="outline">
-                <MessageSquare className="mr-2 h-4 w-4" />
-                Chat with us
-              </Button>
-            </div>
-
-            {/* Contact Form */}
-            <div className="lg:col-span-2">
-              <Card className="p-6">
-                <h2 className="text-lg font-bold">Send us a message</h2>
-
-                <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium">Name</label>
-                    <Input
-                      type="text"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      placeholder="Your name"
-                      required
-                      className="mt-1"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium">Email</label>
-                    <Input
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      placeholder="your@email.com"
-                      required
-                      className="mt-1"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium">Message</label>
-                    <textarea
-                      value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      placeholder="Your message"
-                      required
-                      rows={5}
-                      className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2"
-                    />
-                  </div>
-
-                  <Button
-                    type="submit"
-                    size="lg"
-                    className="w-full"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? 'Sending...' : 'Send Message'}
-                  </Button>
-                </form>
-              </Card>
-            </div>
+        <section className="relative overflow-hidden border-b bg-gradient-to-b from-muted/50 to-background py-20">
+          <div className="absolute inset-0 opacity-40">
+            <div className="absolute left-10 top-10 h-32 w-32 rounded-full bg-primary/10 blur-3xl" />
+            <div className="absolute bottom-10 right-10 h-40 w-40 rounded-full bg-accent/10 blur-3xl" />
           </div>
 
-          {/* FAQ Section */}
-          <section className="mt-16 border-t pt-16">
-            <h2 className="text-3xl font-bold">Frequently Asked Questions</h2>
+          <div className={`relative mx-auto max-w-6xl px-4 ${isRTL ? 'text-right' : 'text-left'}`}>
+            <div className="mx-auto max-w-2xl">
+              <p className="mb-4 inline-flex rounded-full border border-primary/20 bg-primary/10 px-4 py-1 text-sm font-medium text-primary">
+                {isRTL ? 'تواصل معنا' : 'Contact Us'}
+              </p>
 
-            <div className="mt-8 space-y-3">
-              {faqItems.map((item, index) => (
-                <Card
-                  key={index}
-                  className="overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
-                  onClick={() => setExpandedFAQ(expandedFAQ === index ? null : index)}
-                >
-                  <div className="flex items-center justify-between p-6">
-                    <h3 className="font-semibold">{item.question}</h3>
-                    <span className="text-lg font-bold text-muted-foreground">
-                      {expandedFAQ === index ? '−' : '+'}
-                    </span>
-                  </div>
+              <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
+                {isRTL ? 'كل طرق التواصل في مكان واحد' : 'All contact details in one place'}
+              </h1>
 
-                  {expandedFAQ === index && (
-                    <div className="border-t bg-muted/30 p-6">
-                      <p className="text-muted-foreground">{item.answer}</p>
+              <p className="mt-4 text-base leading-7 text-muted-foreground md:text-lg">
+                {isRTL
+                  ? 'لو حابب تتواصل معانا، تقدر توصل لنا بسهولة عن طريق البريد الإلكتروني أو التليفون أو العنوان الموضح تحت.'
+                  : 'If you would like to reach us, you can contact us بسهولة through email, phone, or the address below.'}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-14 md:py-20">
+          <div className="mx-auto max-w-6xl px-4">
+            <div className="grid gap-6 md:grid-cols-3">
+              {cards.map((item, index) => {
+                const Icon = item.icon;
+
+                const content = (
+                  <Card className="group h-full rounded-3xl border bg-background p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+                    <div className={`${isRTL ? 'text-right' : 'text-left'}`}>
+                      <div className={`mb-5 flex ${isRTL ? 'justify-end' : 'justify-start'}`}>
+                        <div className="rounded-2xl bg-primary/10 p-4 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                          <Icon className="h-6 w-6" />
+                        </div>
+                      </div>
+
+                      <h3 className="text-xl font-semibold">{item.title}</h3>
+
+                      <p className="mt-3 break-words text-lg font-medium text-foreground">
+                        {item.value}
+                      </p>
+
+                      <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                        {item.subtext}
+                      </p>
                     </div>
-                  )}
-                </Card>
-              ))}
+                  </Card>
+                );
+
+                return item.href ? (
+                  <a key={index} href={item.href} className="block">
+                    {content}
+                  </a>
+                ) : (
+                  <div key={index}>{content}</div>
+                );
+              })}
             </div>
-          </section>
-        </div>
+          </div>
+        </section>
       </main>
 
       <Footer />

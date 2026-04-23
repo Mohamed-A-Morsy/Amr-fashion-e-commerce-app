@@ -1,7 +1,5 @@
-// Language type
 export type Language = 'en' | 'ar';
 
-// Product types
 export interface ProductColor {
   id: string;
   name: string;
@@ -13,7 +11,7 @@ export interface Product {
   id: string;
   name: string;
   description: string;
-  fullDescription: string;
+  fullDescription?: string;
   price: number;
   discount?: number;
   category: string;
@@ -21,22 +19,14 @@ export interface Product {
   colors: ProductColor[];
   sizes: string[];
   stock: number;
-  rating: number;
-  reviews: number;
+  rating?: number;
+  reviews?: number;
   isFeatured?: boolean;
   isNew?: boolean;
   isBestSeller?: boolean;
+  status?: string;
 }
 
-// Category type
-export interface Category {
-  id: string;
-  name: string;
-  image: string;
-  itemCount: number;
-}
-
-// Cart types
 export interface CartItem {
   productId: string;
   quantity: number;
@@ -45,64 +35,60 @@ export interface CartItem {
   product?: Product;
 }
 
-// Order types
-export type OrderStatus = 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
-
 export interface OrderItem {
-  productId: string;
-  productName: string;
-  quantity: number;
+  product_id: string;
+  name: string;
+  image: string;
   price: number;
-  selectedSize: string;
-  selectedColor: string;
+  quantity: number;
+  size: string;
+  color: string;
+  line_total: number;
 }
 
-export interface Order {
-  id: string;
-  customerId: string;
-  items: OrderItem[];
-  subtotal: number;
-  tax: number;
-  shipping: number;
-  total: number;
-  status: OrderStatus;
-  createdAt: Date;
-  shippingAddress: ShippingAddress;
+export interface CustomerInfo {
+  customer_id?: string;
+  customer_name: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
   notes?: string;
 }
 
-// Customer types
-export interface ShippingAddress {
-  fullName: string;
+export interface CreateOrderPayload {
+  customer_id?: string;
+  customer_name: string;
   email: string;
   phone: string;
-  street: string;
+  address: string;
   city: string;
-  state: string;
-  zipCode: string;
-  country: string;
+  notes?: string;
+  items: OrderItem[];
+  payment_method: string;
 }
 
-export interface Customer {
-  id: string;
-  name: string;
+export interface Order {
+  order_id: string;
+  customer_id?: string;
+  customer_name: string;
   email: string;
   phone: string;
-  avatar?: string;
-  orders: Order[];
-  addresses: ShippingAddress[];
-  wishlist: string[];
-  createdAt: Date;
+  address: string;
+  city: string;
+  notes?: string;
+  items: OrderItem[];
+  subtotal: number;
+  shipping: number;
+  discount: number;
+  total: number;
+  payment_method: string;
+  order_status: string;
+  created_at: string;
 }
 
-// Analytics types
-export interface AnalyticsMetrics {
-  totalOrders: number;
-  totalSales: number;
-  totalCustomers: number;
-  averageOrderValue: number;
-  bestSellingProduct: string;
-  ordersThisMonth: number;
-  salesThisMonth: number;
-  newCustomersThisMonth: number;
+export interface ApiResponse<T = unknown> {
+  success: boolean;
+  message?: string;
+  data?: T;
 }
