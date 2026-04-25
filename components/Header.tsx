@@ -31,15 +31,15 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 md:px-6">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-1 py-1 md:px-6">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <div className="relative h-14 w-14 sm:h-16 sm:w-16 shrink-0">
+          <div className="relative h-16 w-h-h-16 sm:h-20 sm:w-20 shrink-0">
             <Image
               src={
                 mounted && theme === "dark"
-                  ? "/logo-dark.png"
-                  : "/logo-light.png"
+                  ? "/logo-dark2.png"
+                  : "/logo-light2.png"
               }
               alt="Wdee Logo"
               fill
@@ -53,22 +53,21 @@ export function Header() {
         <nav className="hidden items-center gap-8 md:flex">
           <Link
             href="/shop"
-            className="text-sm font-medium transition-colors hover:text-primary"
+            className="relative text-sm font-medium transition-colors duration-300 hover:text-primary after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
           >
             {t("nav.shop")}
           </Link>
-          {/* <Link href="/categories" className="text-sm font-medium transition-colors hover:text-primary">
-            {t('nav.categories')}
-          </Link> */}
+
           <Link
             href="/about"
-            className="text-sm font-medium transition-colors hover:text-primary"
+            className="relative text-sm font-medium transition-colors duration-300 hover:text-primary after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
           >
             {t("nav.about")}
           </Link>
+
           <Link
             href="/contact"
-            className="text-sm font-medium transition-colors hover:text-primary"
+            className="relative text-sm font-medium transition-colors duration-300 hover:text-primary after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
           >
             {t("nav.contact")}
           </Link>
@@ -102,7 +101,6 @@ export function Header() {
           {/* Language Toggle */}
           <Button
             variant="ghost"
-            size="icon"
             onClick={toggleLanguage}
             aria-label="Toggle language"
           >
@@ -139,22 +137,25 @@ export function Header() {
       {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="border-t bg-card p-4 md:hidden">
-          <nav className="flex flex-col gap-4">
-            <Link href="/" onClick={() => setIsMenuOpen(false)}>
-              {t("nav.home")}
-            </Link>
-            <Link href="/shop" onClick={() => setIsMenuOpen(false)}>
-              {t("nav.shop")}
-            </Link>
-            {/* <Link href="/categories" onClick={() => setIsMenuOpen(false)}>
-              {t('nav.categories')}
-            </Link> */}
-            <Link href="/about" onClick={() => setIsMenuOpen(false)}>
-              {t("nav.about")}
-            </Link>
-            <Link href="/contact" onClick={() => setIsMenuOpen(false)}>
-              {t("nav.contact")}
-            </Link>
+          <nav className="flex flex-col gap-2">
+            {[
+              { href: "/", label: t("nav.home") },
+              { href: "/shop", label: t("nav.shop") },
+              { href: "/about", label: t("nav.about") },
+              { href: "/contact", label: t("nav.contact") },
+            ].map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setIsMenuOpen(false)}
+                className="group relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:bg-primary/10 hover:text-primary active:scale-95"
+              >
+                {item.label}
+
+                {/* line animation */}
+                <span className="absolute left-4 bottom-1 h-[2px] w-0 bg-primary transition-all duration-300 group-hover:w-[calc(100%-2rem)]"></span>
+              </Link>
+            ))}
           </nav>
         </div>
       )}

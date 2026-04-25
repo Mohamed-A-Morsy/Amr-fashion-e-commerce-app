@@ -66,6 +66,8 @@ export default function Home() {
         setProductsError("");
 
         const result = await getProducts();
+        console.log(result);
+
         setProducts(result);
       } catch (error) {
         console.error("Failed to load featured products:", error);
@@ -94,6 +96,7 @@ export default function Home() {
 
   const featuredProducts = useMemo(() => {
     return products.filter((p) => p.isFeatured).slice(0, 4);
+   
   }, [products]);
 
   const heroTshirts = [
@@ -123,9 +126,11 @@ export default function Home() {
           >
             <motion.div
               variants={stagger}
-              className={`space-y-5 text-center ${isRTL ? "md:text-right" : "md:text-left"}`}
+              className={`space-y-5 text-center ${
+                isRTL ? "md:text-right" : "md:text-left"
+              }`}
             >
-              <motion.div
+              {/* <motion.div
                 variants={fadeInUp}
                 className={`inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-xs font-semibold text-primary backdrop-blur-md md:text-sm ${
                   isRTL ? "flex-row-reverse" : ""
@@ -133,7 +138,7 @@ export default function Home() {
               >
                 <span className={isRTL ? "ml-2" : "mr-2"}>🚀</span>
                 {t("hero.new_collection")}
-              </motion.div>
+              </motion.div> */}
 
               <motion.h1
                 variants={fadeInUp}
@@ -199,7 +204,9 @@ export default function Home() {
                   >
                     {t("hero.shop_tees")}
                     <ShoppingBag
-                      className={`${isRTL ? "mr-2" : "ml-2"} h-5 w-5 transition-transform group-hover:scale-110`}
+                      className={`${
+                        isRTL ? "mr-2" : "ml-2"
+                      } h-5 w-5 transition-transform group-hover:scale-110`}
                     />
                   </Button>
                 </Link>

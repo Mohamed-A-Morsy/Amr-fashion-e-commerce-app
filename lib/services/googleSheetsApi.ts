@@ -92,7 +92,8 @@ export async function getProducts(): Promise<Product[]> {
       cache: 'no-store',
     }
   );
-
+  
+  
   return (data.products || []).map(mapSheetProduct).filter((item) => item.status === 'active');
 }
 
