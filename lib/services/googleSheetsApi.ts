@@ -6,17 +6,31 @@ if (!SCRIPT_URL) {
   console.warn('NEXT_PUBLIC_GOOGLE_APPS_SCRIPT_URL is not set.');
 }
 
+function normalizeText(value: unknown): string {
+  return String(value || '').trim();
+}
+
 function toBoolean(value: unknown): boolean {
-  return String(value).toLowerCase() === 'true';
+  if (typeof value === 'boolean') return value;
+
+  const normalized = String(value || '').trim().toLowerCase();
+
+  return (
+    normalized === 'true' ||
+    normalized === 'yes' ||
+    normalized === '1' ||
+    normalized === 'TRUE'.toLowerCase()
+  );
 }
 
 function toNumber(value: unknown): number {
-  const num = Number(value);
+  const num = Number(String(value || '').trim());
   return Number.isNaN(num) ? 0 : num;
 }
 
 function parseArray(value: unknown): string[] {
   if (!value) return [];
+
   return String(value)
     .split(',')
     .map((item) => item.trim())
@@ -30,8 +44,9 @@ function parseColors(value: unknown, fallbackImages: string[]): ProductColor[] {
     .split('|')
     .map((entry, index) => {
       const [namePart, hexPart] = entry.split(':');
-      const name = (namePart || '').trim();
-      const hex = (hexPart || '#000000').trim();
+
+      const name = normalizeText(namePart);
+      const hex = normalizeText(hexPart) || '#000000';
 
       if (!name) return null;
 
@@ -49,13 +64,13 @@ function mapSheetProduct(row: Record<string, unknown>): Product {
   const images = parseArray(row.images);
 
   return {
-    id: String(row.id || ''),
-    name: String(row.name || ''),
-    description: String(row.description || ''),
-    fullDescription: String(row.fullDescription || row.description || ''),
+    id: normalizeText(row.id),
+    name: normalizeText(row.name),
+    description: normalizeText(row.description),
+    fullDescription: normalizeText(row.fullDescription || row.description),
     price: toNumber(row.price),
     discount: toNumber(row.discount),
-    category: String(row.category || ''),
+    category: normalizeText(row.category),
     images,
     colors: parseColors(row.colors, images),
     sizes: parseArray(row.sizes),
@@ -65,13 +80,26 @@ function mapSheetProduct(row: Record<string, unknown>): Product {
     isFeatured: toBoolean(row.isFeatured),
     isNew: toBoolean(row.isNew),
     isBestSeller: toBoolean(row.isBestSeller),
-    status: String(row.status || 'active'),
+    status: normalizeText(row.status || 'active').toLowerCase(),
   };
 }
 
 async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
-  const response = await fetch(url, options);
-  const data = await response.json();
+  const response = await fetch(url, {
+    ...options,
+    cache: 'no-store',
+    next: { revalidate: 0 },
+  });
+
+  const text = await response.text();
+
+  let data: any;
+
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new Error('Invalid response from Google Sheet');
+  }
 
   if (!response.ok || !data.success) {
     throw new Error(data.message || 'Request failed');
@@ -85,16 +113,16 @@ export async function getProducts(): Promise<Product[]> {
     throw new Error('Google Apps Script URL is missing');
   }
 
-  const data = await fetchJson<{ success: boolean; products: Record<string, unknown>[] }>(
-    `${SCRIPT_URL}?action=getProducts`,
-    {
-      method: 'GET',
-      cache: 'no-store',
-    }
-  );
-  
-  
-  return (data.products || []).map(mapSheetProduct).filter((item) => item.status === 'active');
+  const data = await fetchJson<{
+    success: boolean;
+    products: Record<string, unknown>[];
+  }>(`${SCRIPT_URL}?action=getProducts&t=${Date.now()}`, {
+    method: 'GET',
+  });
+
+  return (data.products || [])
+    .map(mapSheetProduct)
+    .filter((item) => item.status === 'active');
 }
 
 export async function getProductById(productId: string): Promise<Product | null> {
@@ -127,10 +155,9 @@ export async function getCustomerOrders(email: string): Promise<Order[]> {
   }
 
   const data = await fetchJson<{ success: boolean; orders: Order[] }>(
-    `${SCRIPT_URL}?action=getCustomerOrders&email=${encodeURIComponent(email)}`,
+    `${SCRIPT_URL}?action=getCustomerOrders&email=${encodeURIComponent(email)}&t=${Date.now()}`,
     {
       method: 'GET',
-      cache: 'no-store',
     }
   );
 
@@ -143,10 +170,9 @@ export async function getOrderById(orderId: string): Promise<Order | null> {
   }
 
   const data = await fetchJson<{ success: boolean; order: Order | null }>(
-    `${SCRIPT_URL}?action=getOrderById&order_id=${encodeURIComponent(orderId)}`,
+    `${SCRIPT_URL}?action=getOrderById&order_id=${encodeURIComponent(orderId)}&t=${Date.now()}`,
     {
       method: 'GET',
-      cache: 'no-store',
     }
   );
 

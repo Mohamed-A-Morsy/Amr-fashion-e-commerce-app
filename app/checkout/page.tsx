@@ -196,7 +196,7 @@ export default function CheckoutPage() {
                       </p>
                     </div>
 
-                    <span>${(finalPrice * item.quantity).toFixed(2)}</span>
+                    <span>EGP{(finalPrice * item.quantity).toFixed(2)}</span>
                   </div>
                 );
               })}
@@ -205,17 +205,17 @@ export default function CheckoutPage() {
             <div className="mt-6 space-y-2 border-t pt-4">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span>EGP{subtotal.toFixed(2)}</span>
               </div>
 
               <div className="flex justify-between">
                 <span>Shipping</span>
-                <span>${shipping.toFixed(2)}</span>
+                <span>EGP{shipping.toFixed(2)}</span>
               </div>
 
               <div className="flex justify-between text-lg font-bold">
                 <span>Total</span>
-                <span>${total.toFixed(2)}</span>
+                <span>EGP{total.toFixed(2)}</span>
               </div>
             </div>
           </div>

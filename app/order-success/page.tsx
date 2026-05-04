@@ -176,7 +176,7 @@ export default function OrderSuccessPage() {
 
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Total</span>
-                  <span className="font-bold">${Number(order.total).toFixed(2)}</span>
+                  <span className="font-bold">EGP{Number(order.total).toFixed(2)}</span>
                 </div>
               </div>
             </div>

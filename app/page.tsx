@@ -94,10 +94,11 @@ export default function Home() {
     mouseY.set(0);
   };
 
-  const featuredProducts = useMemo(() => {
-    return products.filter((p) => p.isFeatured).slice(0, 4);
-   
-  }, [products]);
+ const featuredProducts = useMemo(() => {
+  const featured = products.filter((p) => p.isFeatured);
+
+  return featured.length > 0 ? featured : products.slice(0, 4);
+}, [products]);
 
   const heroTshirts = [
     "/images/tshirtblack_out.png",

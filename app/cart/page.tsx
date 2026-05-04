@@ -67,7 +67,7 @@ export default function CartPage() {
 
                           <div className="flex items-center justify-between">
                             <span className="text-lg font-bold">
-                              ${(item.product?.price ?? 0).toFixed(2)}
+                              EGP{(item.product?.price ?? 0).toFixed(2)}
                             </span>
                           </div>
                         </div>
@@ -116,7 +116,7 @@ export default function CartPage() {
                           </div>
 
                           <span className="text-sm font-semibold">
-                            ${((item.product?.price ?? 0) * item.quantity).toFixed(2)}
+                            EGP{((item.product?.price ?? 0) * item.quantity).toFixed(2)}
                           </span>
                         </div>
                       </div>
@@ -156,22 +156,22 @@ export default function CartPage() {
                   <div className="mt-6 space-y-3 border-t pt-6">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">{t('cart.subtotal')}</span>
-                      <span className="font-semibold">${subtotal.toFixed(2)}</span>
+                      <span className="font-semibold">EGP{subtotal.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">{t('cart.tax')}</span>
-                      <span className="font-semibold">${tax.toFixed(2)}</span>
+                      <span className="font-semibold">EGP{tax.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">{t('cart.shipping')}</span>
                       <span className="font-semibold">
-                        {shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`}
+                        {shipping === 0 ? 'FREE' : `EGP${shipping.toFixed(2)}`}
                       </span>
                     </div>
 
                     {shipping > 0 && (
                       <p className="text-xs text-muted-foreground">
-                        Free shipping on orders over $100
+                        Free shipping on orders over EGP 100
                       </p>
                     )}
                   </div>
@@ -180,7 +180,7 @@ export default function CartPage() {
                   <div className="mt-6 border-t pt-6">
                     <div className="flex justify-between">
                       <span className="text-lg font-bold">{t('cart.total')}</span>
-                      <span className="text-2xl font-bold">${total.toFixed(2)}</span>
+                      <span className="text-2xl font-bold">EGP{total.toFixed(2)}</span>
                     </div>
                   </div>
 

@@ -22,38 +22,20 @@ export function Footer() {
   ];
 
   const shopLinks = [
-    {
-      label: isRTL ? 'كل المنتجات' : 'All Products',
-      href: '/shop',
-    },
-    {
-      label: isRTL ? 'وصل حديثًا' : 'New Arrivals',
-      href: '/shop?filter=new',
-    },
-    {
-      label: isRTL ? 'العروض' : 'Sale',
-      href: '/shop?filter=sale',
-    },
+    { label: isRTL ? 'كل المنتجات' : 'All Products', href: '/shop' },
+    { label: isRTL ? 'وصل حديثًا' : 'New Arrivals', href: '/shop?filter=new' },
+    { label: isRTL ? 'العروض' : 'Sale', href: '/shop?filter=sale' },
   ];
 
   const companyLinks = [
-    {
-      label: t('footer.about'),
-      href: '/about',
-    },
-    {
-      label: t('footer.contact'),
-      href: '/contact',
-    },
-    {
-      label: t('nav.shop'),
-      href: '/shop',
-    },
+    { label: t('footer.about'), href: '/about' },
+    { label: t('footer.contact'), href: '/contact' },
+    { label: t('nav.shop'), href: '/shop' },
   ];
 
   return (
     <footer
-      dir={isRTL ? 'ltr' : 'rtl'}
+      dir={isRTL ? 'rtl' : 'ltr'}
       className="relative overflow-hidden border-t bg-[#0b0b0f] text-white"
     >
       <div className="pointer-events-none absolute inset-0">
@@ -64,11 +46,7 @@ export function Footer() {
 
       <div className="relative mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-10">
         <div className="mb-10 rounded-[28px] border border-white/10 bg-white/[0.04] p-6 backdrop-blur-xl md:mb-14 md:p-8">
-          <div
-            className={`flex flex-col gap-6 md:flex-row md:items-center md:justify-between ${
-              isRTL ? 'md:flex-row-reverse' : ''
-            }`}
-          >
+          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div className={isRTL ? 'text-right' : 'text-left'}>
               <p className="mb-2 text-sm font-medium uppercase tracking-[0.25em] text-white/60">
                 {isRTL ? 'بريميوم ستايل' : 'Premium Style'}
@@ -87,26 +65,18 @@ export function Footer() {
               </p>
             </div>
 
-            <div className={`flex ${isRTL ? 'md:justify-start' : 'md:justify-end'}`}>
-              <Link
-                href="/shop"
-                className="group inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-bold text-black transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_10px_30px_rgba(255,255,255,0.15)]"
-              >
-                {isRTL ? 'تسوّق الآن' : 'Shop Now'}
-                <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
-              </Link>
-            </div>
+            <Link
+              href="/shop"
+              className="group inline-flex w-fit items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-bold text-black transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_10px_30px_rgba(255,255,255,0.15)]"
+            >
+              {isRTL ? 'تسوّق الآن' : 'Shop Now'}
+              <ArrowUpRight className={`h-4 w-4 transition-transform duration-300 group-hover:-translate-y-1 ${isRTL ? 'rotate-[-90deg] group-hover:-translate-x-1' : 'group-hover:translate-x-1'}`} />
+            </Link>
           </div>
         </div>
 
-        <div
-          className={`grid gap-10 md:grid-cols-2 ${
-            isRTL
-              ? 'lg:grid-cols-[1fr_0.9fr_0.9fr_1.3fr]'
-              : 'lg:grid-cols-[1.3fr_0.9fr_0.9fr_1fr]'
-          }`}
-        >
-          <div className={`${isRTL ? 'text-right lg:order-4' : 'text-left lg:order-1'}`}>
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.3fr_0.9fr_0.9fr_1fr]">
+          <div className={isRTL ? 'text-right' : 'text-left'}>
             <div className="inline-flex rounded-full border border-white/10 bg-white/[0.04] px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-white/70">
               {t('footer.brand')}
             </div>
@@ -121,7 +91,7 @@ export function Footer() {
                 : 'Not just products, but a cleaner experience, stronger presence, and thoughtful details designed to elevate the brand.'}
             </p>
 
-            <div className={`mt-6 flex gap-3 ${isRTL ? 'justify-end' : 'justify-start'}`}>
+            <div className={`mt-6 flex gap-3 ${isRTL ? 'justify-start' : 'justify-start'}`}>
               {socialLinks.map((item) => {
                 const Icon = item.icon;
 
@@ -139,7 +109,7 @@ export function Footer() {
             </div>
           </div>
 
-          <div className={`${isRTL ? 'text-right lg:order-3' : 'text-left lg:order-2'}`}>
+          <div className={isRTL ? 'text-right' : 'text-left'}>
             <h4 className="text-sm font-semibold uppercase tracking-[0.18em] text-white/50">
               {t('nav.shop')}
             </h4>
@@ -149,19 +119,17 @@ export function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className={`group inline-flex items-center gap-2 text-sm text-white/70 transition-colors hover:text-white ${
-                      isRTL ? 'flex-row-reverse' : ''
-                    }`}
+                    className="group inline-flex items-center gap-2 text-sm text-white/70 transition-colors hover:text-white"
                   >
                     <span>{link.label}</span>
-                    <ArrowUpRight className="h-3.5 w-3.5 opacity-0 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100" />
+                    <ArrowUpRight className={`h-3.5 w-3.5 opacity-0 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:opacity-100 ${isRTL ? 'rotate-[-90deg] group-hover:-translate-x-0.5' : 'group-hover:translate-x-0.5'}`} />
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          <div className={`${isRTL ? 'text-right lg:order-2' : 'text-left lg:order-3'}`}>
+          <div className={isRTL ? 'text-right' : 'text-left'}>
             <h4 className="text-sm font-semibold uppercase tracking-[0.18em] text-white/50">
               {isRTL ? 'الشركة' : 'Company'}
             </h4>
@@ -171,30 +139,23 @@ export function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className={`group inline-flex items-center gap-2 text-sm text-white/70 transition-colors hover:text-white ${
-                      isRTL ? 'flex-row-reverse' : ''
-                    }`}
+                    className="group inline-flex items-center gap-2 text-sm text-white/70 transition-colors hover:text-white"
                   >
                     <span>{link.label}</span>
-                    <ArrowUpRight className="h-3.5 w-3.5 opacity-0 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100" />
+                    <ArrowUpRight className={`h-3.5 w-3.5 opacity-0 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:opacity-100 ${isRTL ? 'rotate-[-90deg] group-hover:-translate-x-0.5' : 'group-hover:translate-x-0.5'}`} />
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          <div className={`${isRTL ? 'text-right lg:order-1' : 'text-left lg:order-4'}`}>
+          <div className={isRTL ? 'text-right' : 'text-left'}>
             <h4 className="text-sm font-semibold uppercase tracking-[0.18em] text-white/50">
               {isRTL ? 'تواصل معنا' : 'Contact'}
             </h4>
 
             <div className="mt-5 space-y-5">
-              <a
-                href="mailto:support@example.com"
-                className={`group flex items-start gap-3 text-white/70 transition-colors hover:text-white ${
-                  isRTL ? 'flex-row-reverse text-right' : ''
-                }`}
-              >
+              <a href="mailto:support@example.com" className="group flex items-start gap-3 text-white/70 transition-colors hover:text-white">
                 <div className="mt-0.5 rounded-full bg-white/5 p-2 text-primary ring-1 ring-white/10 transition-all group-hover:bg-white/10">
                   <Mail className="h-4 w-4" />
                 </div>
@@ -206,12 +167,7 @@ export function Footer() {
                 </div>
               </a>
 
-              <a
-                href="tel:+201000000000"
-                className={`group flex items-start gap-3 text-white/70 transition-colors hover:text-white ${
-                  isRTL ? 'flex-row-reverse text-right' : ''
-                }`}
-              >
+              <a href="tel:+201000000000" className="group flex items-start gap-3 text-white/70 transition-colors hover:text-white">
                 <div className="mt-0.5 rounded-full bg-white/5 p-2 text-primary ring-1 ring-white/10 transition-all group-hover:bg-white/10">
                   <Phone className="h-4 w-4" />
                 </div>
@@ -223,11 +179,7 @@ export function Footer() {
                 </div>
               </a>
 
-              <div
-                className={`flex items-start gap-3 text-white/70 ${
-                  isRTL ? 'flex-row-reverse text-right' : ''
-                }`}
-              >
+              <div className="flex items-start gap-3 text-white/70">
                 <div className="mt-0.5 rounded-full bg-white/5 p-2 text-primary ring-1 ring-white/10">
                   <MapPin className="h-4 w-4" />
                 </div>
@@ -245,21 +197,13 @@ export function Footer() {
         </div>
 
         <div className="mt-12 border-t border-white/10 pt-6">
-          <div
-            className={`flex flex-col gap-4 md:flex-row md:items-center md:justify-between ${
-              isRTL ? 'md:flex-row-reverse' : ''
-            }`}
-          >
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <p className="text-sm text-white/45">
               &copy; 2024 {t('footer.brand')}.{' '}
               {isRTL ? 'جميع الحقوق محفوظة.' : 'All rights reserved.'}
             </p>
 
-            <div
-              className={`flex flex-wrap gap-4 text-sm text-white/45 ${
-                isRTL ? 'md:flex-row-reverse' : ''
-              }`}
-            >
+            <div className="flex flex-wrap gap-4 text-sm text-white/45">
               <Link href="/about" className="transition-colors hover:text-white">
                 {t('footer.about')}
               </Link>
